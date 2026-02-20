@@ -1,5 +1,5 @@
 from models import db, User
-from service_error import ServiceError
+from services.service_error import ServiceError
 
 model = User
 
