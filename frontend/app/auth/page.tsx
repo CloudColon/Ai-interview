@@ -2,80 +2,79 @@
 import { useState } from "react";
 
 export default function AuthPage() {
-  const [mode, setMode] = useState("login"); // "login" | "register"
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+    const [mode, setMode] = useState("login"); // "login" | "register"
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [form, setForm] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+    });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
-  };
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+        setError("");
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
 
-    if (mode === "register" && form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
+        if (mode === "register" && form.password !== form.confirmPassword) {
+            setError("Passwords do not match.");
+            return;
+        }
 
-    setLoading(true);
+        setLoading(true);
 
-    try {
-      const endpoint =
-        mode === "login"
-          ? "http://localhost:5000/api/auth/login"
-          : "http://localhost:5000/api/auth/register";
+        try {
+            const endpoint = mode === "login"
+                ? "http://localhost:8000/api/auth/login"
+                : "http://localhost:8000/api/auth/register";
 
-      const body =
-        mode === "login"
-          ? { email: form.email, password: form.password }
-          : { username: form.username, email: form.email, password: form.password };
+            const body =
+                mode === "login"
+                    ? { email: form.email, password: form.password }
+                    : { username: form.username, email: form.email, password: form.password };
 
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+            const res = await fetch(endpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
 
-      const data = await res.json();
+            const data = await res.json();
 
-      if (!res.ok) {
-        setError(data.error || "Something went wrong.");
-        return;
-      }
+            if (!res.ok) {
+                setError(data.error || "Something went wrong.");
+                return;
+            }
 
-      if (mode === "login") {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data));
-        window.location.href = "/dashboard";
-      } else {
-        setMode("login");
+            if (mode === "login") {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify(data));
+                window.location.href = "/dashboard";
+            } else {
+                setMode("login");
+                setForm({ username: "", email: "", password: "", confirmPassword: "" });
+            }
+        } catch (err) {
+            setError("Unable to connect to server.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const switchMode = () => {
+        setMode(mode === "login" ? "register" : "login");
+        setError("");
         setForm({ username: "", email: "", password: "", confirmPassword: "" });
-      }
-    } catch (err) {
-      setError("Unable to connect to server.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  const switchMode = () => {
-    setMode(mode === "login" ? "register" : "login");
-    setError("");
-    setForm({ username: "", email: "", password: "", confirmPassword: "" });
-  };
-
-  return (
-    <>
-      <style>{`
+    return (
+        <>
+            <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -448,134 +447,134 @@ export default function AuthPage() {
         }
       `}</style>
 
-      <div className="page">
-        <div className="bg-grid" />
-        <div className="bg-orb bg-orb-1" />
-        <div className="bg-orb bg-orb-2" />
+            <div className="page">
+                <div className="bg-grid" />
+                <div className="bg-orb bg-orb-1" />
+                <div className="bg-orb bg-orb-2" />
 
-        <div className="card">
-          {/* Logo */}
-          <div className="logo">
-            <div className="logo-icon">🤖</div>
-            <div className="logo-text">AI<span>Interview</span></div>
-          </div>
+                <div className="card">
+                    {/* Logo */}
+                    <div className="logo">
+                        <div className="logo-icon">🤖</div>
+                        <div className="logo-text">AI<span>Interview</span></div>
+                    </div>
 
-          {/* Tabs */}
-          <div className="tabs">
-            <button
-              className={`tab ${mode === "login" ? "active" : ""}`}
-              onClick={() => { setMode("login"); setError(""); }}
-            >
-              Sign In
-            </button>
-            <button
-              className={`tab ${mode === "register" ? "active" : ""}`}
-              onClick={() => { setMode("register"); setError(""); }}
-            >
-              Register
-            </button>
-          </div>
+                    {/* Tabs */}
+                    <div className="tabs">
+                        <button
+                            className={`tab ${mode === "login" ? "active" : ""}`}
+                            onClick={() => { setMode("login"); setError(""); }}
+                        >
+                            Sign In
+                        </button>
+                        <button
+                            className={`tab ${mode === "register" ? "active" : ""}`}
+                            onClick={() => { setMode("register"); setError(""); }}
+                        >
+                            Register
+                        </button>
+                    </div>
 
-          {/* Heading */}
-          <div className="heading">
-            {mode === "login" ? "Welcome back" : "Create account"}
-          </div>
-          <div className="subheading">
-            {mode === "login"
-              ? "Sign in to continue your interview prep"
-              : "Start your AI-powered interview journey"}
-          </div>
+                    {/* Heading */}
+                    <div className="heading">
+                        {mode === "login" ? "Welcome back" : "Create account"}
+                    </div>
+                    <div className="subheading">
+                        {mode === "login"
+                            ? "Sign in to continue your interview prep"
+                            : "Start your AI-powered interview journey"}
+                    </div>
 
-          {/* Form */}
-          <form className="form" onSubmit={handleSubmit}>
-            {mode === "register" && (
-              <div className="field">
-                <label className="label">Username</label>
-                <div className="input-wrap">
-                  <input
-                    type="text"
-                    name="username"
-                    placeholder="johndoe"
-                    value={form.username}
-                    onChange={handleChange}
-                    required
-                    autoComplete="username"
-                  />
-                  <span className="input-icon">👤</span>
+                    {/* Form */}
+                    <form className="form" onSubmit={handleSubmit}>
+                        {mode === "register" && (
+                            <div className="field">
+                                <label className="label">Username</label>
+                                <div className="input-wrap">
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        placeholder="johndoe"
+                                        value={form.username}
+                                        onChange={handleChange}
+                                        required
+                                        autoComplete="username"
+                                    />
+                                    <span className="input-icon">👤</span>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="field">
+                            <label className="label">Email</label>
+                            <div className="input-wrap">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="you@example.com"
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    required
+                                    autoComplete="email"
+                                />
+                                <span className="input-icon">✉</span>
+                            </div>
+                        </div>
+
+                        <div className="field">
+                            <label className="label">Password</label>
+                            <div className="input-wrap">
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder="••••••••"
+                                    value={form.password}
+                                    onChange={handleChange}
+                                    required
+                                    autoComplete={mode === "login" ? "current-password" : "new-password"}
+                                />
+                                <span className="input-icon">🔒</span>
+                            </div>
+                        </div>
+
+                        {mode === "register" && (
+                            <div className="field">
+                                <label className="label">Confirm Password</label>
+                                <div className="input-wrap">
+                                    <input
+                                        type="password"
+                                        name="confirmPassword"
+                                        placeholder="••••••••"
+                                        value={form.confirmPassword}
+                                        onChange={handleChange}
+                                        required
+                                        autoComplete="new-password"
+                                    />
+                                    <span className="input-icon">🔒</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {error && (
+                            <div className="error-msg">
+                                <span>⚠</span> {error}
+                            </div>
+                        )}
+
+                        <button type="submit" className="btn-primary" disabled={loading}>
+                            {loading && <span className="spinner" />}
+                            {loading
+                                ? mode === "login" ? "Signing in..." : "Creating account..."
+                                : mode === "login" ? "Sign In" : "Create Account"}
+                        </button>
+                    </form>
+
+                    <div className="card-footer">
+                        By continuing, you agree to our Terms of Service
+                        <br />and acknowledge our Privacy Policy.
+                    </div>
                 </div>
-              </div>
-            )}
-
-            <div className="field">
-              <label className="label">Email</label>
-              <div className="input-wrap">
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  autoComplete="email"
-                />
-                <span className="input-icon">✉</span>
-              </div>
             </div>
-
-            <div className="field">
-              <label className="label">Password</label>
-              <div className="input-wrap">
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                />
-                <span className="input-icon">🔒</span>
-              </div>
-            </div>
-
-            {mode === "register" && (
-              <div className="field">
-                <label className="label">Confirm Password</label>
-                <div className="input-wrap">
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="••••••••"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    autoComplete="new-password"
-                  />
-                  <span className="input-icon">🔒</span>
-                </div>
-              </div>
-            )}
-
-            {error && (
-              <div className="error-msg">
-                <span>⚠</span> {error}
-              </div>
-            )}
-
-            <button type="submit" className="btn-primary" disabled={loading}>
-              {loading && <span className="spinner" />}
-              {loading
-                ? mode === "login" ? "Signing in..." : "Creating account..."
-                : mode === "login" ? "Sign In" : "Create Account"}
-            </button>
-          </form>
-
-          <div className="card-footer">
-            By continuing, you agree to our Terms of Service
-            <br />and acknowledge our Privacy Policy.
-          </div>
-        </div>
-      </div>
-    </>
-  );
+        </>
+    );
 }

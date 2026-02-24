@@ -8,6 +8,7 @@ class BaseConfig:
     SECURITY_REGISTERABLE = True
     SECURITY_SEND_REGISTER_EMAIL = False    # disable email during dev
     WTF_CSRF_ENABLED = False                # disable CSRF for API-based apps
+    CORS_HEADERS = 'Content-Type'
 
 class LocalDevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///database.sqlite3')

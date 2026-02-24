@@ -6,7 +6,14 @@ from models import User, db
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
-
+@auth_bp.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        res = jsonify({'message': 'OK'})
+        res.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+        res.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+        res.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, Authentication-Token'
+        return res, 200
 # ─── LOGIN ────────────────────────────────────────────────────────
 
 @auth_bp.route('/login', methods=['POST'])

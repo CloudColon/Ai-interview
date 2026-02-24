@@ -6,6 +6,8 @@ from models import User, Role
 from resources.auth_resources import auth_bp
 from resources import api_bp
 from flask_cors import CORS
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
 
 def create_app():
     app = Flask(__name__)
@@ -13,7 +15,12 @@ def create_app():
 
     # ─── Extensions ───────────────────────────────────────────────
     db.init_app(app)
-    CORS(app, origins="*")
+    CORS(app,
+        origins=["http://localhost:3000"],
+        methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization", "Authentication-Token"],
+        supports_credentials=True
+    )
 
     # ─── Flask-Security ───────────────────────────────────────────
     datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -32,5 +39,6 @@ def create_app():
 
 app = create_app()
 
+# app.py
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000)  # change to 8000
