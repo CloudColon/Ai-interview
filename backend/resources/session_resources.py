@@ -47,7 +47,7 @@ class SessionResource(Resource):
             return {"message": "Not Authorised"}, 401
         data = request.get_json()
         data['id'] = id
-        item = service.update(data)
+        item = service.update_session(data)
         return marshal(item, marshal_fields), 200
 
     def delete(self, id):
@@ -71,7 +71,7 @@ class SessionStartResource(Resource):
             return {"message": "Not Authorised"}, 401
         if item.status != 'pending':
             return {"message": f"Session is already {item.status}"}, 400
-        item = service.update({'id': id, 'status': 'ongoing'})
+        item = service.update_session({'id': id, 'status': 'ongoing'})
         return marshal(item, marshal_fields), 200
 
 
@@ -86,7 +86,7 @@ class SessionEndResource(Resource):
             return {"message": "Not Authorised"}, 401
         if item.status != 'ongoing':
             return {"message": "Session is not ongoing"}, 400
-        item = service.update({'id': id, 'status': 'completed'})
+        item = service.update_session({'id': id, 'status': 'completed'})
         return marshal(item, marshal_fields), 200
 
 
